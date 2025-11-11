@@ -1,0 +1,50 @@
+@model IEnumerable<BlockchainMvc.Models.Block>
+
+@{
+    ViewData["Title"] = "Blockchain";
+}
+
+<h2>Blockchain</h2>
+
+@if (ViewBag.IsValid == false)
+{
+    <div class="alert alert-danger">
+        Порушено цілісність ланцюга блоків.
+    </div>
+}
+
+<form asp-action="Create" method="post" class="mb-3">
+    <div class="form-group">
+        <label for="data">Дані нового блока</label>
+        <input type="text" name="data" id="data" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Додати блок</button>
+</form>
+
+<p>
+    <a asp-action="Search" class="btn btn-secondary">Пошук блока</a>
+</p>
+
+<table class="table table-striped table-bordered">
+    <thead>
+    <tr>
+        <th>Index</th>
+        <th>Data</th>
+        <th>PrevHash</th>
+        <th>Hash</th>
+        <th>Timestamp</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var b in Model)
+    {
+        <tr>
+            <td>@b.Index</td>
+            <td>@b.Data</td>
+            <td style="max-width: 200px; word-wrap: break-word;">@b.PrevHash</td>
+            <td style="max-width: 200px; word-wrap: break-word;">@b.Hash</td>
+            <td>@b.Timestamp.ToString("dd MMMM yyyy 'р.,' HH:mm:ss")</td>
+        </tr>
+    }
+    </tbody>
+</table>

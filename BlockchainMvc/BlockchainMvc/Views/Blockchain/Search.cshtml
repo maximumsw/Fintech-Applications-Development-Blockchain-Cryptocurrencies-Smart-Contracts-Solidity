@@ -1,0 +1,19 @@
+@{
+    ViewData["Title"] = "Пошук блока";
+}
+
+<h2>Пошук блока</h2>
+
+<form asp-action="Search" method="post">
+    <div class="form-group">
+        <label for="index">Пошук за індексом</label>
+        <input type="number" name="index" id="index" class="form-control" />
+    </div>
+
+    <div class="form-group mt-2">
+        <label for="hash">Або пошук за хешем</label>
+        <input type="text" name="hash" id="hash" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Знайти</button>
+</form>

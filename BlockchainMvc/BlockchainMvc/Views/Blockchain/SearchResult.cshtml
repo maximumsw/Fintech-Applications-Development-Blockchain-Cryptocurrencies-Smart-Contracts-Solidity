@@ -1,0 +1,42 @@
+@model BlockchainMvc.Models.Block
+
+@{
+    ViewData["Title"] = "Результат пошуку";
+}
+
+<h2>Результат пошуку</h2>
+
+@if (Model == null)
+{
+    <div class="alert alert-warning">
+        Блок не знайдено.
+    </div>
+}
+else
+{
+    <table class="table table-bordered">
+        <tr>
+            <th>Index</th>
+            <td>@Model.Index</td>
+        </tr>
+        <tr>
+            <th>Data</th>
+            <td>@Model.Data</td>
+        </tr>
+        <tr>
+            <th>PrevHash</th>
+            <td style="max-width: 300px; word-wrap: break-word;">@Model.PrevHash</td>
+        </tr>
+        <tr>
+            <th>Hash</th>
+            <td style="max-width: 300px; word-wrap: break-word;">@Model.Hash</td>
+        </tr>
+        <tr>
+            <th>Timestamp</th>
+            <td>@Model.Timestamp.ToString("dd MMMM yyyy 'р.,' HH:mm:ss")</td>
+        </tr>
+    </table>
+}
+<p>
+    <a asp-action="Index" class="btn btn-secondary">Повернутись до ланцюга</a>
+</p>
