@@ -1,0 +1,18 @@
+@model BlockchainMvc_V2.Models.Block
+
+<h2>Edit Block</h2>
+
+<form method="post">
+    <input type="hidden" name="index" value="@Model.Index" />
+
+    <div class="form-group">
+        <label>Data</label>
+        <input name="data" class="form-control" value="@Model.Data" />
+    </div>
+
+    <p class="mt-3 text-danger">
+        After editing, the block will lose its digital signature and become INVALID.
+    </p>
+
+    <button class="btn btn-primary mt-3">Save</button>
+</form>

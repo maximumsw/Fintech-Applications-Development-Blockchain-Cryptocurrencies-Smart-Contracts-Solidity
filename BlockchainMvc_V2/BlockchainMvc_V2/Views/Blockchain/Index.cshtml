@@ -1,0 +1,54 @@
+@model BlockchainMvc_V2.Services.Blockchain
+
+<h2>Blockchain</h2>
+
+<p>
+    <a class="btn btn-primary" href="/Blockchain/Create">Add Block</a>
+</p>
+
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>Index</th>
+        <th>Data</th>
+        <th>Hash</th>
+        <th>Signature</th>
+        <th>Valid?</th>
+        <th>Edit</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var block in Model.Chain)
+    {
+        var valid = Model.ValidateSignature(block);
+        <tr>
+            <td>@block.Index</td>
+            <td>@block.Data</td>
+            <td>@block.Hash</td>
+            <td>
+                @if (block.HasSignature)
+                {
+                    <span style="font-size:12px; color:gray">Signed</span>
+                }
+            </td>
+            <td>
+                @if (block.Index == 0)
+                {
+                    <span>-</span>
+                }
+                else if (valid)
+                {
+                    <span style="color:green; font-size:20px">✔</span>
+                }
+                else
+                {
+                    <span style="color:red; font-size:20px">❌</span>
+                }
+            </td>
+            <td>
+                <a href="/Blockchain/Edit/@block.Index">Edit</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

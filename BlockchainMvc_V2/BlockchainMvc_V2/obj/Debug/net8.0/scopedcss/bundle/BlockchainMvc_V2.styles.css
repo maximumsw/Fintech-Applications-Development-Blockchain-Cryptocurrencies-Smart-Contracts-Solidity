@@ -1,0 +1,49 @@
+/* _content/BlockchainMvc_V2/Views/Shared/_Layout.cshtml.rz.scp.css */
+/* Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+a.navbar-brand[b-bt28ot0h8g] {
+  white-space: normal;
+  text-align: center;
+  word-break: break-all;
+}
+
+a[b-bt28ot0h8g] {
+  color: #0077cc;
+}
+
+.btn-primary[b-bt28ot0h8g] {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active[b-bt28ot0h8g], .nav-pills .show > .nav-link[b-bt28ot0h8g] {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.border-top[b-bt28ot0h8g] {
+  border-top: 1px solid #e5e5e5;
+}
+.border-bottom[b-bt28ot0h8g] {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow[b-bt28ot0h8g] {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy[b-bt28ot0h8g] {
+  font-size: 1rem;
+  line-height: inherit;
+}
+
+.footer[b-bt28ot0h8g] {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 60px;
+}
