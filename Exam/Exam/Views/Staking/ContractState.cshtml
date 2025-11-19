@@ -1,0 +1,24 @@
+@model IEnumerable<(string User, decimal Amount, int StartBlock, int HeldBlocks, decimal WithdrawNow)>
+
+<h2>Стан PenaltyStaking-контракту</h2>
+
+<table border="1" cellpadding="6">
+    <tr>
+        <th>Користувач</th>
+        <th>Сума</th>
+        <th>Початок</th>
+        <th>Пройшло блоків</th>
+        <th>Може вивести зараз</th>
+    </tr>
+
+    @foreach (var s in Model)
+    {
+        <tr>
+            <td>@s.User</td>
+            <td>@s.Amount</td>
+            <td>@s.StartBlock</td>
+            <td>@s.HeldBlocks</td>
+            <td>@s.WithdrawNow</td>
+        </tr>
+    }
+</table>

@@ -1,0 +1,19 @@
+@{
+    ViewBag.Title = "Вивести з PenaltyStaking";
+}
+
+<h2>Вивести з PenaltyStaking</h2>
+
+<p><b>Адреса контракту:</b> @ViewBag.ContractAddress</p>
+
+@if (TempData["Msg"] != null)
+{
+    <div style="color:red">@TempData["Msg"]</div>
+}
+
+<form method="post">
+    <label>Адреса користувача (UserAddress):</label><br />
+    <input type="text" name="userAddress" required /><br /><br />
+
+    <button type="submit">Вивести</button>
+</form>

@@ -1,0 +1,70 @@
+﻿@model IList<BlockchainApp.Models.Block>
+
+@{
+    ViewData["Title"] = "Home Page";
+    string contractAddress = (string)ViewBag.PenaltyStakingAddress;
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+<h3>PenaltyStaking:</h3>
+<p><b>Адреса:</b> @ViewBag.PenaltyStakingAddress</p>
+
+<a href="/Staking/Stake">Покласти у PenaltyStaking</a><br />
+<a href="/Staking/Unstake">Вивести з PenaltyStaking</a><br />
+<a href="/Staking/ContractState">Стан контракту</a><br /><br />
+
+<h3>Майнінг</h3>
+<a href="/Home/Mine">Намайнити блок</a><br /><br />
+
+@if (TempData["Msg"] != null)
+{
+    <div style="color:green">@TempData["Msg"]</div>
+}
+
+<hr />
+
+<h3>Транзакції по блоках</h3>
+<p>Довжина ланцюга: @ViewBag.ChainLength блоків</p>
+
+<table border="1" cellpadding="6">
+    <thead>
+    <tr>
+        <th>Блок</th>
+        <th>From</th>
+        <th>To</th>
+        <th>Amount</th>
+        <th>Fee</th>
+        <th>Type</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var block in Model)
+    {
+        foreach (var tx in block.Transactions)
+        {
+            string type = "Regular";
+            if (tx.ToAddress == contractAddress)
+            {
+                type = "Stake";
+            }
+            else if (tx.FromAddress == contractAddress)
+            {
+                type = "Unstake";
+            }
+
+            <tr>
+                <td>@block.Index</td>
+                <td>@tx.FromAddress</td>
+                <td>@tx.ToAddress</td>
+                <td>@tx.Amount</td>
+                <td>@tx.Fee</td>
+                <td>@type</td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
