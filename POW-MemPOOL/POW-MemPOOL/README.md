@@ -1,53 +1,53 @@
-# POW-MemPOOL: A Minimal Blockchain MVC Project
+# POW-MemPOOL: Мінімальний MVC проєкт блокчейну
 
-This is a .NET MVC application that demonstrates a simple blockchain implementation with Proof-of-Work (PoW) and asynchronous block mining.
+Це .NET MVC застосунок, який демонструє просту реалізацію блокчейну з Proof-of-Work (PoW) та асинхронним майнінгом блоків.
 
-## Features
+## Можливості
 
-- **Blockchain Simulation**: View a chain of blocks, each cryptographically linked to the previous one.
-- **Proof-of-Work (PoW)**: Blocks must be "mined" before being added to the chain. The difficulty of the mining process can be adjusted.
-- **Sync & Async Mining**: 
-    - **Add Block (Sync)**: The UI will freeze while the block is mined synchronously.
-    - **Mine (Async)**: Mines a new block in a background thread without freezing the UI.
-- **Asynchronous Mining Controls**:
-    - Start mining a new block with any data.
-    - View live progress (attempts per second and elapsed time).
-    - Cancel a mining operation in progress.
-- **Chain Validation**: The application continuously validates the integrity of the blockchain. Any tampering with block data will invalidate the block and the chain.
+- **Симуляція блокчейну**: Переглядайте ланцюжок блоків, кожен з яких криптографічно пов'язаний з попереднім.
+- **Proof-of-Work (PoW)**: Блоки повинні бути "видобуті" перед додаванням до ланцюга. Складність процесу майнінгу можна регулювати.
+- **Синхронний та асинхронний майнінг**:
+    - **Додати блок (синхронно)**: Інтерфейс користувача буде заморожений, поки блок майниться синхронно.
+    - **Майнити (асинхронно)**: Майнить новий блок у фоновому потоці без заморожування інтерфейсу користувача.
+- **Елементи керування асинхронним майнінгом**:
+    - Розпочніть майнінг нового блоку з будь-якими даними.
+    - Переглядайте прогрес у реальному часі (спроб за секунду та витрачений час).
+    - Скасуйте операцію майнінгу, що виконується.
+- **Валідація ланцюга**: Застосунок постійно перевіряє цілісність блокчейну. Будь-яке втручання в дані блоку призведе до недійсності блоку та ланцюга.
 
-## How to Run
+## Як запустити
 
-1. **Prerequisites**:
-   - .NET SDK (6.0 or later).
-   - A code editor like Visual Studio or VS Code.
+1. **Передумови**:
+   - .NET SDK (6.0 або новіше).
+   - Редактор коду, такий як Visual Studio або VS Code.
 
-2. **Clone & Run**:
+2. **Клонувати та запустити**:
    ```sh
-   # Clone the repository
+   # Клонувати репозиторій
    git clone <repository-url>
    cd POW-MemPOOL
 
-   # Run the application
+   # Запустити застосунок
    dotnet run
    ```
-3. Open your web browser and navigate to the URL provided in the console (e.g., `https://localhost:7123`).
+3. Відкрийте веббраузер і перейдіть за URL-адресою, вказаною в консолі (наприклад, `https://localhost:7123`).
 
-## How to Use Asynchronous Mining
+## Як використовувати асинхронний майнінг
 
-1. **Start Mining**:
-   - On the homepage, locate the **"Mine (Async)"** form.
-   - Enter any text into the "Block Data" field.
-   - Click the **"Mine (Async)"** button.
+1. **Почати майнінг**:
+   - На домашній сторінці знайдіть форму **"Майнити (асинхронно)"**.
+   - Введіть будь-який текст у поле "Дані блоку".
+   - Натисніть кнопку **"Майнити (асинхронно)"**.
 
-2. **Monitor Progress**:
-   - The "Add Block" forms will be replaced by a "Mining in Progress..." panel.
-   - You will see a live counter of hashing **attempts** and the total **elapsed time**.
-   - The UI will remain fully responsive during this process.
+2. **Моніторинг прогресу**:
+   - Форми "Додати блок" будуть замінені панеллю "Майнінг у процесі...".
+   - Ви побачите лічильник **спроб** хешування в реальному часі та загальний **витрачений час**.
+   - Інтерфейс користувача залишатиметься повністю чуйним під час цього процесу.
 
-3. **Cancel Mining**:
-   - To stop the current mining operation, simply click the **"Stop Mining"** button. The operation will be cancelled, and the UI will return to its initial state.
+3. **Скасувати майнінг**:
+   - Щоб зупинити поточну операцію майнінгу, просто натисніть кнопку **"Зупинити майнінг"**. Операція буде скасована, і інтерфейс користувача повернеться до початкового стану.
 
-4. **Completion**:
-   - Once the mining is successful, a new block will be added to the blockchain.
-   - The page will refresh automatically, showing the new block in the table with its calculated `Nonce`, `Difficulty`, and total mining time (`ms`).
-   - A notification will appear at the top confirming that mining was completed.
+4. **Завершення**:
+   - Після успішного майнінгу новий блок буде додано до блокчейну.
+   - Сторінка автоматично оновиться, показуючи новий блок у таблиці з його розрахованим `Nonce`, `Difficulty` та загальним часом майнінгу (`ms`).
+   - У верхній частині з'явиться сповіщення про завершення майнінгу.
