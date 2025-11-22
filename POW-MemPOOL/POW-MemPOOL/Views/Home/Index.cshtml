@@ -1,0 +1,170 @@
+﻿@model POW_MemPOOL.Models.IndexViewModel
+@{
+    ViewData["Title"] = "Blockchain Explorer";
+}
+
+<style>
+    .hash-cell {
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .valid-true {
+        color: green;
+    }
+    .valid-false {
+        color: red;
+        font-weight: bold;
+    }
+    .progress-container {
+        display: none; /* Hidden by default */
+    }
+</style>
+
+<div class="container">
+    <h1 class="mt-4">Minimal Blockchain with PoW</h1>
+    <hr />
+
+    <div class="row mb-4">
+        <!-- Add Block Forms -->
+        <div class="col-md-6">
+            <h4>Add New Block</h4>
+            <div id="add-block-forms">
+                <form asp-action="AddBlock" method="post" class="form-inline mb-2">
+                    <input type="text" name="data" class="form-control mr-2" placeholder="Block Data" required />
+                    <button type="submit" class="btn btn-primary">Add Block (Sync)</button>
+                </form>
+                <form asp-action="AddBlockAsync" method="post" class="form-inline">
+                    <input type="text" name="data" class="form-control mr-2" placeholder="Block Data" required />
+                    <button type="submit" class="btn btn-info">Mine (Async)</button>
+                </form>
+            </div>
+            <!-- Mining Progress -->
+            <div id="mining-progress-container" class="mt-3" style="display: none;">
+                <h4>Mining in Progress...</h4>
+                <div class="progress">
+                    <div id="mining-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%"></div>
+                </div>
+                <p class="mt-2">
+                    <span id="mining-status-text">Attempts: 0</span> | 
+                    <span id="mining-timer">Elapsed: 0s</span>
+                </p>
+                <form asp-action="CancelMining" method="post">
+                    <button type="submit" class="btn btn-danger">Stop Mining</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Settings -->
+        <div class="col-md-6">
+            <h4>Settings</h4>
+            <form asp-action="SetDifficulty" method="post" class="form-inline">
+                <label for="difficulty" class="mr-2">Difficulty:</label>
+                <input type="number" name="difficulty" class="form-control mr-2" value="@Model.CurrentDifficulty" min="1" max="8" />
+                <button type="submit" class="btn btn-secondary">Set Difficulty</button>
+            </form>
+            <div class="mt-3">
+                <h5>Blockchain Status</h5>
+                <p>Is Chain Valid? <span class="valid-@(Model.IsChainValid.ToString().ToLower())">@Model.IsChainValid</span></p>
+            </div>
+        </div>
+    </div>
+    
+    @if (TempData["MiningResult"] != null)
+    {
+        <div class="alert alert-info" role="alert">
+            @TempData["MiningResult"]
+        </div>
+    }
+
+    <h4>Blockchain</h4>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Data</th>
+                    <th title="Previous Hash">Prev. Hash</th>
+                    <th title="Hash">Hash</th>
+                    <th>Timestamp</th>
+                    <th>Nonce</th>
+                    <th>Diff</th>
+                    <th title="Mining Duration (ms)">ms</th>
+                    <th>Valid</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var block in Model.Blockchain.Chain.Reverse())
+                {
+                    var isValid = block.HasValidProof();
+                    <tr class="@(isValid ? "" : "table-danger")">
+                        <td>@block.Id</td>
+                        <td>@block.Data</td>
+                        <td class="hash-cell" title="@block.PreviousHash">@block.PreviousHash</td>
+                        <td class="hash-cell" title="@block.Hash">@block.Hash</td>
+                        <td>@block.Timestamp.ToString("HH:mm:ss")</td>
+                        <td>@block.Nonce</td>
+                        <td>@block.Difficulty</td>
+                        <td>@block.MiningDurationMs</td>
+                        <td class="valid-@(isValid.ToString().ToLower())">@isValid</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const isMining = @Model.IsMining.ToString().ToLower();
+            const addBlockForms = document.getElementById('add-block-forms');
+            const miningProgressContainer = document.getElementById('mining-progress-container');
+            const statusText = document.getElementById('mining-status-text');
+            const timerText = document.getElementById('mining-timer');
+            
+            let intervalId;
+            let startTime;
+
+            function toggleMiningView(isMiningNow) {
+                if (isMiningNow) {
+                    addBlockForms.style.display = 'none';
+                    miningProgressContainer.style.display = 'block';
+                } else {
+                    addBlockForms.style.display = 'block';
+                    miningProgressContainer.style.display = 'none';
+                }
+            }
+
+            function pollStatus() {
+                fetch('/Home/GetMiningStatus')
+                    .then(response => response.json())
+                    .then(data => {
+                        const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+                        timerText.textContent = `Elapsed: ${elapsedSeconds}s`;
+                        
+                        if (data.status === 1) { // InProgress
+                            statusText.textContent = `Attempts: ${data.attempts.toLocaleString()}`;
+                        } else { // Completed, Canceled, or NotStarted
+                            clearInterval(intervalId);
+                            // Short delay to allow the backend to process completion before reload.
+                            setTimeout(() => window.location.reload(), 500); 
+                        }
+                    })
+                    .catch(() => {
+                        // Stop polling on error
+                        clearInterval(intervalId);
+                        toggleMiningView(false);
+                    });
+            }
+
+            // Initial setup on page load
+            toggleMiningView(isMining);
+            if (isMining) {
+                startTime = Date.now();
+                intervalId = setInterval(pollStatus, 1000);
+            }
+        })();
+    </script>
+}
