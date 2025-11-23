@@ -141,10 +141,6 @@ All projects follow **ASP.NET Core MVC** patterns:
 - **No network protocols** - nodes communicate via method calls
 - **Unencrypted private keys** stored in memory
 
-## Documentation
-
-See [CLAUDE.md](./CLAUDE.md) for detailed architecture, development patterns, and troubleshooting guides.
-
 ## Author
 
 Maksym Batashan
