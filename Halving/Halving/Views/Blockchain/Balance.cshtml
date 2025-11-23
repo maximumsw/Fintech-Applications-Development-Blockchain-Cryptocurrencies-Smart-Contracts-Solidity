@@ -1,0 +1,32 @@
+@{
+    ViewData["Title"] = "Check Balance";
+}
+
+<h1>Check Account Balance</h1>
+
+<p><a href="@Url.Action("Index")">← Back to Blockchain</a></p>
+
+<div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+    <form method="get" asp-action="Balance">
+        <label style="display: block; margin-bottom: 10px; font-weight: bold;">Enter Address:</label>
+        <input type="text" name="address" value="@ViewBag.Address" required
+               style="width: 400px; padding: 10px; border: 1px solid #ced4da; border-radius: 4px;"
+               placeholder="Enter wallet address" />
+        <button type="submit" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">
+            Check Balance
+        </button>
+    </form>
+</div>
+
+@if (ViewBag.Address != null)
+{
+    <div style="background: white; border: 2px solid #007bff; padding: 30px; border-radius: 8px; text-align: center;">
+        <h3>Address:</h3>
+        <p style="font-family: monospace; font-size: 1.1em; margin: 10px 0;">@ViewBag.Address</p>
+
+        <h3 style="margin-top: 30px;">Balance:</h3>
+        <p style="font-size: 2.5em; font-weight: bold; color: #28a745; margin: 10px 0;">
+            @ViewBag.Balance coins
+        </p>
+    </div>
+}

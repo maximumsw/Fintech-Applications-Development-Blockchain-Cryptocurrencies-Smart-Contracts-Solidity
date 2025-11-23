@@ -1,0 +1,28 @@
+@{
+    ViewData["Title"] = "Validate Blockchain";
+}
+
+<h1>Blockchain Validation</h1>
+
+<p><a href="@Url.Action("Index")">← Back to Blockchain</a></p>
+
+<div style="padding: 30px; background: @(ViewBag.IsValid ? "#d4edda" : "#f8d7da"); border: 2px solid @(ViewBag.IsValid ? "#c3e6cb" : "#f5c6cb"); border-radius: 8px; text-align: center;">
+    <h2 style="color: @(ViewBag.IsValid ? "#155724" : "#721c24");">
+        @ViewBag.Message
+    </h2>
+
+    @if (ViewBag.IsValid)
+    {
+        <p style="font-size: 1.1em; margin-top: 20px;">
+            ✓ All blocks are correctly linked<br />
+            ✓ All hashes are valid<br />
+            ✓ Proof of work is satisfied for all blocks
+        </p>
+    }
+    else
+    {
+        <p style="font-size: 1.1em; margin-top: 20px; color: #721c24;">
+            ✗ The blockchain has been tampered with or contains invalid blocks
+        </p>
+    }
+</div>

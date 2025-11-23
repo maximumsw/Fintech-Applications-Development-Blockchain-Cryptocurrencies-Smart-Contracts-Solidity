@@ -1,0 +1,307 @@
+@model List<Halving.Models.Block>
+@{
+    ViewData["Title"] = "Blockchain Explorer";
+}
+
+<style>
+    .blockchain-stats {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+    .stat-item {
+        display: inline-block;
+        margin-right: 30px;
+        margin-bottom: 10px;
+    }
+    .stat-label {
+        font-weight: bold;
+        color: #555;
+    }
+    .stat-value {
+        font-size: 1.3em;
+        color: #007bff;
+    }
+    .block-card {
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        background: white;
+    }
+    .block-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .block-index {
+        font-size: 1.5em;
+        font-weight: bold;
+        color: #333;
+    }
+    .block-hash {
+        font-family: monospace;
+        font-size: 0.9em;
+        color: #666;
+        word-break: break-all;
+    }
+    .expand-btn {
+        cursor: pointer;
+        color: #007bff;
+        text-decoration: underline;
+        margin-top: 10px;
+        display: inline-block;
+    }
+    .transactions-section {
+        display: none;
+        margin-top: 15px;
+        border-top: 1px solid #dee2e6;
+        padding-top: 15px;
+    }
+    .transactions-section.show {
+        display: block;
+    }
+    .transaction-card {
+        background: #f8f9fa;
+        border-left: 4px solid #28a745;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+    }
+    .transaction-card.coinbase {
+        border-left-color: #ffc107;
+        background: #fff3cd;
+    }
+    .tx-detail {
+        margin: 5px 0;
+        font-size: 0.95em;
+    }
+    .tx-label {
+        font-weight: bold;
+        display: inline-block;
+        width: 120px;
+    }
+    .form-section {
+        background: #e9ecef;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+    .alert {
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 4px;
+    }
+    .alert-success {
+        background-color: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+    }
+    .alert-error {
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+    }
+</style>
+
+<h1>Blockchain Explorer</h1>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-error">@TempData["Error"]</div>
+}
+
+<!-- Blockchain Statistics -->
+<div class="blockchain-stats">
+    <h3>Blockchain Statistics</h3>
+    <div class="stat-item">
+        <div class="stat-label">Current Difficulty:</div>
+        <div class="stat-value">@ViewBag.CurrentDifficulty</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-label">Average Mining Time (last @ViewBag.TargetBlockTime blocks):</div>
+        <div class="stat-value">@string.Format("{0:0.00}", ViewBag.AverageMiningTime) seconds</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-label">Target Block Time:</div>
+        <div class="stat-value">@ViewBag.TargetBlockTime seconds</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-label">Mining Reward:</div>
+        <div class="stat-value">@ViewBag.MiningReward coins</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-label">Pending Transactions:</div>
+        <div class="stat-value">@ViewBag.MempoolCount</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-label">Total Blocks:</div>
+        <div class="stat-value">@Model.Count</div>
+    </div>
+</div>
+
+<!-- Mining Form -->
+<div class="form-section">
+    <h3>Mine New Block</h3>
+    <form method="post" asp-action="Mine">
+        <div style="margin-bottom: 10px;">
+            <label>Miner Address:</label>
+            <input type="text" name="minerAddress" required style="width: 300px; padding: 5px;" placeholder="Enter your address" />
+        </div>
+        <button type="submit" style="padding: 8px 20px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
+            Mine Block
+        </button>
+    </form>
+</div>
+
+<!-- Add Transaction Form -->
+<div class="form-section">
+    <h3>Add Transaction</h3>
+    <form method="post" asp-action="AddTransaction">
+        <div style="margin-bottom: 10px;">
+            <label>From Address:</label>
+            <input type="text" name="fromAddress" required style="width: 300px; padding: 5px;" placeholder="Sender address" />
+        </div>
+        <div style="margin-bottom: 10px;">
+            <label>To Address:</label>
+            <input type="text" name="toAddress" required style="width: 300px; padding: 5px;" placeholder="Recipient address" />
+        </div>
+        <div style="margin-bottom: 10px;">
+            <label>Amount:</label>
+            <input type="number" name="amount" step="0.01" required style="width: 150px; padding: 5px;" placeholder="0.00" />
+        </div>
+        <div style="margin-bottom: 10px;">
+            <label>Fee:</label>
+            <input type="number" name="fee" step="0.01" value="0" style="width: 150px; padding: 5px;" placeholder="0.00" />
+        </div>
+        <div style="margin-bottom: 10px;">
+            <label>Note (optional):</label>
+            <input type="text" name="note" style="width: 300px; padding: 5px;" placeholder="Optional note" />
+        </div>
+        <button type="submit" style="padding: 8px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+            Add to Mempool
+        </button>
+    </form>
+</div>
+
+<!-- Quick Links -->
+<div style="margin-bottom: 20px;">
+    <a href="@Url.Action("Mempool")" style="margin-right: 15px;">View Mempool</a>
+    <a href="@Url.Action("Balances")" style="margin-right: 15px;">View Balances</a>
+    <a href="@Url.Action("Validate")">Validate Chain</a>
+</div>
+
+<!-- Blockchain -->
+<h2>Blocks (@Model.Count)</h2>
+
+@foreach (var block in Model.OrderByDescending(b => b.Index))
+{
+    <div class="block-card">
+        <div class="block-header">
+            <div>
+                <span class="block-index">Block #@block.Index</span>
+                @if (block.Index == 0)
+                {
+                    <span style="background: #ffc107; color: black; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; margin-left: 10px;">GENESIS</span>
+                }
+            </div>
+            <div style="text-align: right;">
+                <div><strong>Difficulty:</strong> @block.Difficulty</div>
+                @if (block.MiningDurationMs > 0)
+                {
+                    <div><strong>Mining Time:</strong> @string.Format("{0:0.00}", block.MiningDurationMs / 1000.0)s</div>
+                }
+            </div>
+        </div>
+
+        <div style="margin: 10px 0;">
+            <strong>Timestamp:</strong> @block.Timestamp.ToString("yyyy-MM-dd HH:mm:ss") UTC
+        </div>
+
+        <div style="margin: 10px 0;">
+            <strong>Hash:</strong> <span class="block-hash">@block.Hash</span>
+        </div>
+
+        <div style="margin: 10px 0;">
+            <strong>Previous Hash:</strong> <span class="block-hash">@block.PreviousHash</span>
+        </div>
+
+        <div style="margin: 10px 0;">
+            <strong>Nonce:</strong> @block.Nonce
+        </div>
+
+        <div style="margin: 10px 0;">
+            <strong>Transactions:</strong> @block.Transactions.Count
+        </div>
+
+        @if (block.Transactions.Count > 0)
+        {
+            <a class="expand-btn" onclick="toggleTransactions('block-@block.Index')">
+                Show Transactions ▼
+            </a>
+
+            <div id="block-@block.Index" class="transactions-section">
+                <h4>Transactions (@block.Transactions.Count)</h4>
+                @foreach (var tx in block.Transactions)
+                {
+                    <div class="transaction-card @(tx.IsCoinbase() ? "coinbase" : "")">
+                        @if (tx.IsCoinbase())
+                        {
+                            <div style="font-weight: bold; color: #856404; margin-bottom: 8px;">
+                                ⭐ COINBASE TRANSACTION (Mining Reward)
+                            </div>
+                        }
+                        <div class="tx-detail">
+                            <span class="tx-label">From:</span>
+                            <span style="font-family: monospace;">@tx.FromAddress</span>
+                        </div>
+                        <div class="tx-detail">
+                            <span class="tx-label">To:</span>
+                            <span style="font-family: monospace;">@tx.ToAddress</span>
+                        </div>
+                        <div class="tx-detail">
+                            <span class="tx-label">Amount:</span>
+                            <span style="color: #28a745; font-weight: bold;">@tx.Amount coins</span>
+                        </div>
+                        @if (tx.Fee > 0)
+                        {
+                            <div class="tx-detail">
+                                <span class="tx-label">Fee:</span>
+                                <span>@tx.Fee coins</span>
+                            </div>
+                        }
+                        @if (!string.IsNullOrEmpty(tx.Note))
+                        {
+                            <div class="tx-detail">
+                                <span class="tx-label">Note:</span>
+                                <span style="font-style: italic;">@tx.Note</span>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+}
+
+<script>
+    function toggleTransactions(blockId) {
+        var section = document.getElementById(blockId);
+        var btn = section.previousElementSibling;
+
+        if (section.classList.contains('show')) {
+            section.classList.remove('show');
+            btn.innerHTML = 'Show Transactions ▼';
+        } else {
+            section.classList.add('show');
+            btn.innerHTML = 'Hide Transactions ▲';
+        }
+    }
+</script>
