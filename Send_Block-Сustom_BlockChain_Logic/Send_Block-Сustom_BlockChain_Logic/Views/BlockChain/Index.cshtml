@@ -1,0 +1,326 @@
+@model Send_Block_Сustom_BlockChain_Logic.ViewModels.BlockChainViewModel
+@{
+    ViewData["Title"] = $"Node {Model.CurrentNodeId} - Blockchain";
+}
+
+<div class="container-fluid mt-4">
+    <!-- Header with Node Selector -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title">Multi-Node Blockchain Simulation</h2>
+                    <form method="get" asp-action="Index" class="form-inline">
+                        <label class="mr-2"><strong>Active Node:</strong></label>
+                        <select name="nodeId" class="form-control mr-2" onchange="this.form.submit()">
+                            @foreach (var nodeId in Model.AllNodeIds)
+                            {
+                                <option value="@nodeId" selected="@(nodeId == Model.CurrentNodeId)">Node @nodeId</option>
+                            }
+                        </select>
+                        <span class="badge badge-primary badge-lg">Currently viewing: Node @Model.CurrentNodeId</span>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["Success"]
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            @TempData["Error"]
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+    }
+
+    <div class="row">
+        <!-- Left Column: Controls -->
+        <div class="col-md-4">
+            <!-- Settings -->
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Settings</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" asp-action="SetDifficulty">
+                        <input type="hidden" name="nodeId" value="@Model.CurrentNodeId" />
+                        <div class="form-group">
+                            <label>Mining Difficulty</label>
+                            <select name="difficulty" class="form-control">
+                                @for (int i = 1; i <= 6; i++)
+                                {
+                                    <option value="@i" selected="@(i == Model.Difficulty)">@i</option>
+                                }
+                            </select>
+                            <small class="form-text text-muted">Current: @Model.Difficulty | Reward: @Model.MiningReward coins</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Set Difficulty</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Wallet Management -->
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Wallet Management</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" asp-action="RegisterWallet" class="mb-3">
+                        <input type="hidden" name="nodeId" value="@Model.CurrentNodeId" />
+                        <div class="form-group">
+                            <label>Register New Wallet</label>
+                            <input type="text" name="walletName" class="form-control" placeholder="Wallet Name" required />
+                        </div>
+                        <button type="submit" class="btn btn-success btn-block">Register Wallet</button>
+                    </form>
+
+                    <hr />
+
+                    <form method="post" asp-action="DemoSetup">
+                        <input type="hidden" name="nodeId" value="@Model.CurrentNodeId" />
+                        <button type="submit" class="btn btn-outline-success btn-block">Demo Setup (Alice, Bob, Charlie)</button>
+                    </form>
+
+                    @if (Model.Wallets.Any())
+                    {
+                        <hr />
+                        <h6>Registered Wallets:</h6>
+                        <div class="list-group" style="max-height: 200px; overflow-y: auto;">
+                            @foreach (var wallet in Model.Wallets)
+                            {
+                                <div class="list-group-item">
+                                    <strong>@wallet.Key</strong>
+                                    <br />
+                                    <small class="text-muted">@wallet.Value.Address</small>
+                                    <br />
+                                    <small class="text-success">Balance: @Model.Chain.Sum(b => b.Transactions.Where(t => t.To == wallet.Value.Address).Sum(t => t.Amount) - b.Transactions.Where(t => t.From == wallet.Value.Address).Sum(t => t.Amount)) coins</small>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Transaction Creation -->
+            <div class="card mb-3">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">Create Transaction</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" asp-action="CreateTransaction">
+                        <input type="hidden" name="nodeId" value="@Model.CurrentNodeId" />
+                        <div class="form-group">
+                            <label>From Wallet</label>
+                            <select name="fromWallet" class="form-control" required>
+                                <option value="">-- Select Wallet --</option>
+                                @foreach (var wallet in Model.Wallets)
+                                {
+                                    <option value="@wallet.Key">@wallet.Key (@wallet.Value.Address)</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>To Address</label>
+                            <input type="text" name="toAddress" class="form-control" placeholder="Recipient Address" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Amount</label>
+                            <input type="number" name="amount" class="form-control" step="0.01" min="0.01" placeholder="0.00" required />
+                        </div>
+                        <button type="submit" class="btn btn-warning btn-block">Create Transaction</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Mining -->
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Mining</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" asp-action="MinePending">
+                        <input type="hidden" name="nodeId" value="@Model.CurrentNodeId" />
+                        <div class="form-group">
+                            <label>Miner Wallet</label>
+                            <select name="minerWallet" class="form-control" required>
+                                <option value="">-- Select Miner --</option>
+                                @foreach (var wallet in Model.Wallets)
+                                {
+                                    <option value="@wallet.Key">@wallet.Key</option>
+                                }
+                            </select>
+                            <small class="form-text text-muted">Pending transactions: @Model.Mempool.Count</small>
+                        </div>
+                        <button type="submit" class="btn btn-info btn-block">
+                            Mine Block
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Broadcasting -->
+            <div class="card mb-3">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">Block Broadcasting</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" asp-action="BroadcastLastBlock">
+                        <input type="hidden" name="nodeId" value="@Model.CurrentNodeId" />
+                        <p class="mb-2">Broadcast the last mined block to all other nodes.</p>
+                        <button type="submit" class="btn btn-danger btn-block" @(Model.Chain.Count <= 1 ? "disabled" : "")>
+                            Broadcast Last Block
+                        </button>
+                        <small class="form-text text-muted">
+                            Last block: #@(Model.Chain.Count - 1)
+                        </small>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Blockchain Display -->
+        <div class="col-md-8">
+            <!-- Mempool -->
+            @if (Model.Mempool.Any())
+            {
+                <div class="card mb-3">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0">Mempool (@Model.Mempool.Count pending transactions)</h5>
+                    </div>
+                    <div class="card-body" style="max-height: 200px; overflow-y: auto;">
+                        <table class="table table-sm table-striped mb-0">
+                            <thead>
+                                <tr>
+                                    <th>From</th>
+                                    <th>To</th>
+                                    <th>Amount</th>
+                                    <th>Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var tx in Model.Mempool)
+                                {
+                                    <tr>
+                                        <td><small>@tx.From[..Math.Min(8, tx.From.Length)]</small></td>
+                                        <td><small>@tx.To[..Math.Min(8, tx.To.Length)]</small></td>
+                                        <td>@tx.Amount</td>
+                                        <td><small>@tx.Timestamp.ToString("HH:mm:ss")</small></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+
+            <!-- Blockchain -->
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Blockchain (Node @Model.CurrentNodeId) - @Model.Chain.Count Blocks</h5>
+                </div>
+                <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+                    @foreach (var block in Model.Chain.OrderByDescending(b => b.Index))
+                    {
+                        <div class="card mb-2 @(block.Index == 0 ? "border-primary" : "border-secondary")">
+                            <div class="card-header @(block.Index == 0 ? "bg-primary text-white" : "bg-secondary text-white")">
+                                <strong>Block #@block.Index</strong>
+                                @if (block.Index == Model.Chain.Count - 1 && block.Index > 0)
+                                {
+                                    <span class="badge badge-success float-right">Latest</span>
+                                }
+                                @if (block.Index == 0)
+                                {
+                                    <span class="badge badge-light float-right">Genesis</span>
+                                }
+                            </div>
+                            <div class="card-body p-2">
+                                <table class="table table-sm table-borderless mb-0">
+                                    <tr>
+                                        <td style="width: 120px;"><strong>Timestamp:</strong></td>
+                                        <td>@block.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Hash:</strong></td>
+                                        <td><code class="small">@block.Hash</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Previous Hash:</strong></td>
+                                        <td><code class="small">@block.PrevHash</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Mined By:</strong></td>
+                                        <td>@block.MinedBy</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Nonce:</strong></td>
+                                        <td>@block.Nonce</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Difficulty:</strong></td>
+                                        <td>@block.Difficulty</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Transactions:</strong></td>
+                                        <td>@block.Transactions.Count</td>
+                                    </tr>
+                                </table>
+
+                                @if (block.Transactions.Any())
+                                {
+                                    <hr class="my-2" />
+                                    <table class="table table-sm table-striped mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>From</th>
+                                                <th>To</th>
+                                                <th>Amount</th>
+                                                <th>Valid</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var tx in block.Transactions)
+                                            {
+                                                <tr>
+                                                    <td><small>@tx.From[..Math.Min(12, tx.From.Length)]</small></td>
+                                                    <td><small>@tx.To[..Math.Min(12, tx.To.Length)]</small></td>
+                                                    <td>@tx.Amount</td>
+                                                    <td>
+                                                        @if (tx.IsValid())
+                                                        {
+                                                            <span class="badge badge-success">✓</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="badge badge-danger">✗</span>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Auto-dismiss alerts after 5 seconds
+        setTimeout(function() {
+            $('.alert').fadeOut('slow');
+        }, 5000);
+    </script>
+}

@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet build:*)",
+      "Bash(gemini -p \"Translate these English comments to Ukrainian. Keep ONLY the translations, no explanations:\n\n1. Add services to the container.\n2. Register blockchain services as singleton to maintain state across requests\n3. Configure the HTTP request pipeline.\n4. The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.\n5. Create reward transaction\n6. Validate block index\n7. Validate previous hash\n8. Validate hash computation\n9. Validate proof of work\n10. Validate block signature\n11. Validate all transactions\n12. Remove transactions from mempool that are in the accepted block\n13. Clear existing data\n14. Create demo wallets\n15. Create some demo transactions only if we have more than genesis block\n16. We need some initial balance, which would come from mining\n17. So we won''t create transactions in demo setup\n18. Users should mine first to get coinbase rewards\n19. Initialize three nodes\n20. Don''t broadcast to self\n21. Add transaction data\n22. Sign the block\n23. Genesis block doesn''t have a signature\n24. Verify hash\n25. Verify proof of work\n26. Verify signature\n27. Verify all transactions\n28. Coinbase transactions (mining rewards) don''t need signatures\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="../buildMultiTargeting/Send_Block-Сustom_BlockChain_Logic.props" />
+</Project>

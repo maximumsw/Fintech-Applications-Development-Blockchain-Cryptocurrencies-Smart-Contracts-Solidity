@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "Send_Block-Сustom_BlockChain_Logic/1.0.0": {
+        "runtime": {
+          "Send_Block-Сustom_BlockChain_Logic.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Send_Block-Сustom_BlockChain_Logic/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
