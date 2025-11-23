@@ -1,0 +1,80 @@
+@model List<Halving2.Models.Block>
+@{
+    ViewData["Title"] = "Blockchain";
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">Blockchain Explorer</h1>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row mb-3">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Chain Statistics</h5>
+                    <p class="mb-1"><strong>Total Blocks:</strong> @Model.Count</p>
+                    <p class="mb-0"><strong>Latest Block:</strong> #@(Model.Count - 1)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <a href="@Url.Action("CreateTransaction")" class="btn btn-primary">Create Transaction</a>
+        <a href="@Url.Action("Mine")" class="btn btn-success">Mine Block</a>
+        <a href="@Url.Action("Wallets")" class="btn btn-info">View Wallets</a>
+        <a href="@Url.Action("Mempool")" class="btn btn-warning">View Mempool</a>
+    </div>
+
+    <h2>Blocks</h2>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Height</th>
+                    <th>Timestamp</th>
+                    <th>Hash</th>
+                    <th>Previous Hash</th>
+                    <th>Transactions</th>
+                    <th>Nonce</th>
+                    <th>Difficulty</th>
+                    <th>Mining Time (ms)</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var block in Model.OrderByDescending(b => b.Height))
+                {
+                    <tr>
+                        <td><strong>@block.Height</strong></td>
+                        <td>@block.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                        <td><code class="text-truncate d-inline-block" style="max-width: 150px;" title="@block.Hash">@block.Hash</code></td>
+                        <td><code class="text-truncate d-inline-block" style="max-width: 150px;" title="@block.PreviousHash">@block.PreviousHash</code></td>
+                        <td><span class="badge bg-primary">@block.Transactions.Count</span></td>
+                        <td>@block.Nonce</td>
+                        <td>@block.Difficulty</td>
+                        <td>@block.MiningDurationMs</td>
+                        <td>
+                            <a href="@Url.Action("BlockDetails", new { height = block.Height })" class="btn btn-sm btn-outline-primary">Details</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

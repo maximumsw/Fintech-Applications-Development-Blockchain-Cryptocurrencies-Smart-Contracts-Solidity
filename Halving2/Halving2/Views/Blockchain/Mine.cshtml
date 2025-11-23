@@ -1,0 +1,104 @@
+@{
+    ViewData["Title"] = "Mine Block";
+    var addresses = ViewBag.Addresses as List<string>;
+    var mempoolCount = (int)(ViewBag.MempoolCount ?? 0);
+    var nextBlockHeight = (int)(ViewBag.NextBlockHeight ?? 0);
+    var nextBlockReward = (decimal)(ViewBag.NextBlockReward ?? 0m);
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">Mine New Block</h1>
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index")">Blockchain</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Mine Block</li>
+        </ol>
+    </nav>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Next Block</h5>
+                    <p class="display-4">#@nextBlockHeight</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Pending Transactions</h5>
+                    <p class="display-4">@mempoolCount</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Block Reward</h5>
+                    <p class="display-4">@nextBlockReward.ToString("F2")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (mempoolCount == 0)
+    {
+        <div class="alert alert-warning" role="alert">
+            <strong>No transactions to mine!</strong> The mempool is empty. Please create some transactions first.
+        </div>
+        <a href="@Url.Action("CreateTransaction")" class="btn btn-primary">Create Transaction</a>
+        <a href="@Url.Action("Index")" class="btn btn-secondary">Back to Blockchain</a>
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Start Mining</h5>
+            </div>
+            <div class="card-body">
+                <p>Select the miner address that will receive the block reward:</p>
+
+                <form method="post" asp-action="Mine">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-3">
+                        <label for="minerAddress" class="form-label">Miner Address</label>
+                        <select class="form-select" id="minerAddress" name="minerAddress" required>
+                            <option value="">Select miner address...</option>
+                            @if (addresses != null)
+                            {
+                                foreach (var addr in addresses)
+                                {
+                                    <option value="@addr">@addr</option>
+                                }
+                            }
+                        </select>
+                        <small class="form-text text-muted">
+                            This address will receive @nextBlockReward.ToString("F2") coins as the block reward plus all transaction fees.
+                        </small>
+                    </div>
+
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="bi bi-gear-fill"></i> Start Mining
+                    </button>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+
+        <div class="alert alert-info mt-4" role="alert">
+            <strong>Note:</strong> Mining will process all pending transactions in the mempool and create a new block.
+            This may take a few seconds depending on the difficulty setting.
+        </div>
+    }
+</div>

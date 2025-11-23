@@ -1,0 +1,81 @@
+@{
+    ViewData["Title"] = "Create Transaction";
+    var addresses = ViewBag.Addresses as List<string>;
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">Create Transaction</h1>
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index")">Blockchain</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Create Transaction</li>
+        </ol>
+    </nav>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Transaction Details</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" asp-action="CreateTransaction">
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+                    <label for="fromAddress" class="form-label">From Address</label>
+                    <select class="form-select" id="fromAddress" name="fromAddress" required>
+                        <option value="">Select sender...</option>
+                        @if (addresses != null)
+                        {
+                            foreach (var addr in addresses)
+                            {
+                                <option value="@addr">@addr</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="toAddress" class="form-label">To Address</label>
+                    <select class="form-select" id="toAddress" name="toAddress" required>
+                        <option value="">Select recipient...</option>
+                        @if (addresses != null)
+                        {
+                            foreach (var addr in addresses)
+                            {
+                                <option value="@addr">@addr</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="amount" class="form-label">Amount</label>
+                    <input type="number" class="form-control" id="amount" name="amount" step="0.01" min="0.01" required />
+                </div>
+
+                <div class="mb-3">
+                    <label for="fee" class="form-label">Transaction Fee</label>
+                    <input type="number" class="form-control" id="fee" name="fee" step="0.01" min="0" value="0.1" required />
+                    <small class="form-text text-muted">Higher fees may be prioritized by miners.</small>
+                </div>
+
+                <div class="mb-3">
+                    <label for="note" class="form-label">Note (Optional)</label>
+                    <input type="text" class="form-control" id="note" name="note" placeholder="Optional note" />
+                </div>
+
+                <button type="submit" class="btn btn-primary">Add to Mempool</button>
+                <a href="@Url.Action("Index")" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>

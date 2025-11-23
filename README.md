@@ -1,6 +1,6 @@
 # Fintech Projects - Blockchain Educational Monorepo
 
-A collection of progressive .NET blockchain implementations demonstrating core concepts from basic hashing to smart contracts. Built with **ASP.NET Core MVC** on **.NET 8.0**.
+A collection of progressive .NET blockchain implementations demonstrating core concepts from basic hashing to smart contracts and advanced economic mechanisms. Built with **ASP.NET Core MVC** on **.NET 8.0**.
 
 ## Projects
 
@@ -88,6 +88,58 @@ dotnet run
 
 ---
 
+### 6. Halving
+**Minimal Blockchain with Dynamic Difficulty**
+- Proof-of-Work mining with configurable difficulty (1-6)
+- Automatic difficulty adjustment based on block time
+- Transaction management with fees and notes
+- Mempool for pending transactions
+- Coinbase mining rewards
+- Real-time balance tracking
+- Expandable transaction viewer
+- Blockchain validation
+
+**Quick Start:**
+```bash
+cd Halving/Halving
+dotnet run
+```
+Navigate to `http://localhost:5298` or `https://localhost:7125`
+
+**Key Features:**
+- Target block time: 10 seconds
+- Adjustment window: 5 blocks
+- Mining reward: 50 coins
+- Dynamic difficulty (1-10 range)
+
+---
+
+### 7. Halving2
+**Blockchain with Halving Mechanism**
+- Bitcoin-style halving (reward reduction every N blocks)
+- Transaction confirmation system
+- Wallet history with confirmed/pending status
+- Block details with confirmation counts
+- Proof-of-Work mining
+- Genesis block with initial distribution (Alice, Bob, Charlie: 1000 coins each)
+
+**Quick Start:**
+```bash
+cd Halving2/Halving2
+dotnet run
+```
+Navigate to `http://localhost:5167` or `https://localhost:7115`
+
+**Halving Schedule:**
+- Base reward: 50 coins
+- Halving interval: 10 blocks
+- Blocks 1-10: 50 coins
+- Blocks 11-20: 25 coins
+- Blocks 21-30: 12.5 coins
+- Formula: `reward = BaseReward / 2^(blockHeight / HalvingInterval)`
+
+---
+
 ## Prerequisites
 
 - [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) or higher
@@ -115,15 +167,19 @@ dotnet clean
 3. **POW-MemPOOL** → Consensus (proof-of-work, async patterns)
 4. **Send_Block** → Production features (transactions, wallets, multi-node consensus)
 5. **Exam** → Advanced concepts (smart contracts, DeFi)
+6. **Halving** → Economic mechanisms (dynamic difficulty, adaptive consensus)
+7. **Halving2** → Tokenomics (deflationary models, confirmation systems)
 
 ## Key Features Across Projects
 
 - **Cryptography:** SHA-256 hashing, RSA-2048 digital signatures
 - **Consensus:** Proof-of-Work with configurable difficulty
-- **Transactions:** Digital signature validation, balance tracking
-- **Wallets:** RSA key pair generation, address derivation
+- **Transactions:** Digital signature validation, balance tracking, confirmation system
+- **Wallets:** RSA key pair generation, address derivation, transaction history
 - **Smart Contracts:** Interface-based contract system with state management
 - **Multi-Node:** Simulated 3-node network with block broadcasting
+- **Economic Models:** Dynamic difficulty adjustment, halving mechanism, deflationary tokenomics
+- **Advanced Features:** Mempool management, coinbase rewards, transaction fees
 
 ## Architecture
 

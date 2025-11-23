@@ -1,0 +1,175 @@
+@model Halving2.ViewModels.WalletHistoryViewModel
+@{
+    ViewData["Title"] = $"Wallet History - {Model.Address}";
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">Wallet History</h1>
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index")">Blockchain</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Wallets")">Wallets</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Address</li>
+        </ol>
+    </nav>
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Wallet Information</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Address:</strong> <code>@Model.Address</code></p>
+                    <p><strong>Confirmed Balance:</strong> <span class="badge bg-success fs-6">@Model.ConfirmedBalance.ToString("F2")</span></p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Total Balance (incl. Pending):</strong>
+                        @if (Model.TotalBalance != Model.ConfirmedBalance)
+                        {
+                            <span class="badge bg-warning text-dark fs-6">@Model.TotalBalance.ToString("F2")</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success fs-6">@Model.TotalBalance.ToString("F2")</span>
+                        }
+                    </p>
+                    <p><strong>Total Transactions:</strong> @Model.Transactions.Count</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Transaction History</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Direction</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Amount</th>
+                            <th>Fee</th>
+                            <th>Status</th>
+                            <th>Block Height</th>
+                            <th>Confirmations</th>
+                            <th>Note</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var txvm in Model.Transactions)
+                        {
+                            var tx = txvm.Transaction;
+                            var isIncoming = txvm.Direction == "Incoming";
+                            var isCoinbase = tx.FromAddress == "COINBASE" || tx.FromAddress == "GENESIS";
+
+                            <tr class="@(txvm.IsInMempool ? "table-warning" : isIncoming ? "table-success" : "")">
+                                <td>
+                                    @if (isIncoming)
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-arrow-down-circle"></i> Incoming
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">
+                                            <i class="bi bi-arrow-up-circle"></i> Outgoing
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (isCoinbase)
+                                    {
+                                        <span class="badge bg-warning text-dark">@tx.FromAddress</span>
+                                    }
+                                    else if (tx.FromAddress == Model.Address)
+                                    {
+                                        <strong>@tx.FromAddress</strong>
+                                    }
+                                    else
+                                    {
+                                        <a href="@Url.Action("WalletHistory", new { address = tx.FromAddress })">@tx.FromAddress</a>
+                                    }
+                                </td>
+                                <td>
+                                    @if (tx.ToAddress == Model.Address)
+                                    {
+                                        <strong>@tx.ToAddress</strong>
+                                    }
+                                    else
+                                    {
+                                        <a href="@Url.Action("WalletHistory", new { address = tx.ToAddress })">@tx.ToAddress</a>
+                                    }
+                                </td>
+                                <td>
+                                    <strong>@(isIncoming ? "+" : "-")@tx.Amount.ToString("F2")</strong>
+                                </td>
+                                <td>
+                                    @if (!isIncoming && tx.Fee > 0)
+                                    {
+                                        <span class="text-danger">-@tx.Fee.ToString("F2")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (txvm.IsInMempool)
+                                    {
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">Confirmed</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (tx.BlockHeight.HasValue)
+                                    {
+                                        <a href="@Url.Action("BlockDetails", new { height = tx.BlockHeight.Value })">
+                                            #@tx.BlockHeight.Value
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (txvm.IsInMempool)
+                                    {
+                                        <span class="badge bg-secondary">0</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">@txvm.Confirmations</span>
+                                    }
+                                </td>
+                                <td>
+                                    <small class="text-muted">@(tx.Note ?? "-")</small>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (Model.Transactions.Count == 0)
+            {
+                <p class="text-muted text-center">No transactions found for this wallet.</p>
+            }
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a href="@Url.Action("Wallets")" class="btn btn-secondary">Back to Wallets</a>
+        <a href="@Url.Action("CreateTransaction")" class="btn btn-primary">Create Transaction</a>
+    </div>
+</div>
