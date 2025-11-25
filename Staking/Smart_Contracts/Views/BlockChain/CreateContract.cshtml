@@ -1,0 +1,70 @@
+@{
+    ViewData["Title"] = "Create Contract";
+    var wallets = (List<string>)ViewBag.Wallets;
+    var currentBlock = (int)ViewBag.CurrentBlockIndex;
+}
+
+<div class="container mt-4">
+    <h1>Create Smart Contract</h1>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>TimeLock Contract</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Lock funds at an address until a specific block height is reached.</p>
+
+                    <form method="post" asp-action="CreateTimeLockContract">
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address to Lock</label>
+                            <select name="address" id="address" class="form-select" required>
+                                <option value="">Select address...</option>
+                                @foreach (var wallet in wallets)
+                                {
+                                    <option value="@wallet">@wallet</option>
+                                }
+                            </select>
+                            <div class="form-text">This address will be locked by the contract</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="unlockBlockIndex" class="form-label">Unlock at Block</label>
+                            <input type="number" name="unlockBlockIndex" id="unlockBlockIndex"
+                                   class="form-control" min="@(currentBlock + 1)" value="@(currentBlock + 5)" required />
+                            <div class="form-text">Current block: @currentBlock. Must be greater than current block.</div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success">Create TimeLock Contract</button>
+                            <a asp-action="Wallet" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="alert alert-warning">
+                <h5>How TimeLock Works</h5>
+                <ul>
+                    <li>Once created, the address cannot send funds until the unlock block</li>
+                    <li>The address can still receive funds</li>
+                    <li>Any transaction from the locked address will be rejected with an error message</li>
+                    <li>After the unlock block is mined, the address functions normally</li>
+                </ul>
+            </div>
+
+            <div class="alert alert-info">
+                <h5>Example Use Cases</h5>
+                <ul>
+                    <li>Vesting schedules for employees</li>
+                    <li>Time-based savings accounts</li>
+                    <li>Delayed payment releases</li>
+                    <li>Trust fund mechanisms</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

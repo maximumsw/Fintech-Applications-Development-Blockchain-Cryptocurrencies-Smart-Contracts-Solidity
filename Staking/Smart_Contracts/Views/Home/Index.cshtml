@@ -1,0 +1,79 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container mt-4">
+    <div class="text-center mb-5">
+        <h1 class="display-4">Smart Contracts BlockChain</h1>
+        <p class="lead">A simple blockchain implementation with smart contract support</p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">BlockChain Explorer</h5>
+                    <p class="card-text">View all blocks, transactions, and mine new blocks to process pending transactions.</p>
+                    <a asp-controller="BlockChain" asp-action="Index" class="btn btn-primary">Explore BlockChain</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Wallet Manager</h5>
+                    <p class="card-text">Manage addresses, view balances, create transactions, and see contract status.</p>
+                    <a asp-controller="BlockChain" asp-action="Wallet" class="btn btn-primary">Manage Wallets</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Smart Contracts</h5>
+                    <p class="card-text">Create and manage smart contracts like TimeLock to add rules for addresses.</p>
+                    <a asp-controller="BlockChain" asp-action="CreateContract" class="btn btn-primary">Create Contract</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-md-12">
+            <h2>Features</h2>
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <strong>Smart Contract Support:</strong> Implement custom validation rules for addresses using the ISmartContract interface
+                </li>
+                <li class="list-group-item">
+                    <strong>TimeLock Contracts:</strong> Lock funds at an address until a specific block height is reached
+                </li>
+                <li class="list-group-item">
+                    <strong>Transaction Validation:</strong> All transactions are validated by contracts before being added to the pending pool
+                </li>
+                <li class="list-group-item">
+                    <strong>Mining System:</strong> Mine blocks with proof-of-work to process pending transactions
+                </li>
+                <li class="list-group-item">
+                    <strong>Wallet Management:</strong> View balances, transaction history, and contract details for each address
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="alert alert-info">
+                <h5>Getting Started</h5>
+                <ol>
+                    <li>Visit the <strong>Wallet</strong> page to see available addresses and balances</li>
+                    <li>Create a <strong>TimeLock Contract</strong> to lock an address until a future block</li>
+                    <li>Try to <strong>Create a Transaction</strong> from a locked address - it will be rejected!</li>
+                    <li><strong>Mine blocks</strong> to process transactions and unlock time-locked addresses</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>

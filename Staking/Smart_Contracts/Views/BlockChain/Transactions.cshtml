@@ -1,0 +1,84 @@
+@using Smart_Contracts.Models
+@{
+    ViewData["Title"] = "Transactions";
+    var address = (string)ViewBag.Address;
+    var transactions = (List<Transaction>)ViewBag.Transactions;
+}
+
+<div class="container mt-4">
+    <h1>Transactions for @address</h1>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <a asp-action="Wallet" class="btn btn-secondary mb-3">Back to Wallet</a>
+
+            @if (transactions.Any())
+            {
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>From</th>
+                                    <th>To</th>
+                                    <th>Amount</th>
+                                    <th>Type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var tx in transactions.OrderByDescending(t => t.Timestamp))
+                                {
+                                    <tr>
+                                        <td>@DateTimeOffset.FromUnixTimeSeconds(tx.Timestamp).ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                        <td>
+                                            @if (string.IsNullOrEmpty(tx.FromAddress))
+                                            {
+                                                <span class="badge bg-info">Mining Reward</span>
+                                            }
+                                            else
+                                            {
+                                                @tx.FromAddress
+                                            }
+                                        </td>
+                                        <td>@tx.ToAddress</td>
+                                        <td>
+                                            @if (tx.ToAddress == address)
+                                            {
+                                                <span class="text-success">+@tx.Amount</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-danger">-@tx.Amount</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (tx.ToAddress == address && tx.FromAddress == address)
+                                            {
+                                                <span class="badge bg-secondary">Self</span>
+                                            }
+                                            else if (tx.ToAddress == address)
+                                            {
+                                                <span class="badge bg-success">Received</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Sent</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    No transactions found for this address.
+                </div>
+            }
+        </div>
+    </div>
+</div>

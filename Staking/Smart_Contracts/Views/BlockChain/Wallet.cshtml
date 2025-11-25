@@ -1,0 +1,114 @@
+@using Smart_Contracts.Models
+@{
+    ViewData["Title"] = "Wallet";
+    var walletData = (List<object>)ViewBag.WalletData;
+    var contracts = (Dictionary<string, ISmartContract>)ViewBag.Contracts;
+}
+
+<div class="container mt-4">
+    <h1>Wallet Manager</h1>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3>Addresses</h3>
+                <div>
+                    <a asp-action="CreateTransaction" class="btn btn-primary">New Transaction</a>
+                    <a asp-action="CreateContract" class="btn btn-success">Create Contract</a>
+                </div>
+            </div>
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Address</th>
+                        <th>Balance</th>
+                        <th>Type</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (dynamic wallet in walletData)
+                    {
+                        <tr>
+                            <td>
+                                @wallet.Address
+                                @if (wallet.IsContract)
+                                {
+                                    <span class="badge bg-info ms-2">CONTRACT</span>
+                                }
+                            </td>
+                            <td>@wallet.Balance</td>
+                            <td>
+                                @if (wallet.IsContract)
+                                {
+                                    <span class="text-info">@wallet.ContractType</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Wallet</span>
+                                }
+                            </td>
+                            <td>
+                                <a asp-action="Transactions" asp-route-address="@wallet.Address" class="btn btn-sm btn-outline-primary">
+                                    View Transactions
+                                </a>
+                                @if (wallet.IsContract)
+                                {
+                                    <a asp-action="ContractDetails" asp-route-address="@wallet.Address" class="btn btn-sm btn-outline-info">
+                                        Contract Details
+                                    </a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @if (contracts.Any())
+    {
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <h3>Registered Contracts</h3>
+                <div class="list-group">
+                    @foreach (var contract in contracts)
+                    {
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="mb-1">@contract.Value.GetType().Name</h5>
+                                    <p class="mb-1"><strong>Address:</strong> @contract.Key</p>
+                                    @if (contract.Value is TimeLockContract timeLock)
+                                    {
+                                        <p class="mb-1"><strong>Unlock Block:</strong> @timeLock.UnlockBlockIndex</p>
+                                    }
+                                </div>
+                                <a asp-action="ContractDetails" asp-route-address="@contract.Key" class="btn btn-sm btn-info">
+                                    Details
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>

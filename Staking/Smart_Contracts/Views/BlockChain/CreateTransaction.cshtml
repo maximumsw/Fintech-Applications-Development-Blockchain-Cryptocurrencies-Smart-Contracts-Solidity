@@ -1,0 +1,62 @@
+@{
+    ViewData["Title"] = "Create Transaction";
+    var wallets = (List<string>)ViewBag.Wallets;
+}
+
+<div class="container mt-4">
+    <h1>Create Transaction</h1>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" asp-action="CreateTransaction">
+                        <div class="mb-3">
+                            <label for="fromAddress" class="form-label">From Address</label>
+                            <select name="fromAddress" id="fromAddress" class="form-select" required>
+                                <option value="">Select sender...</option>
+                                @foreach (var wallet in wallets)
+                                {
+                                    <option value="@wallet">@wallet</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="toAddress" class="form-label">To Address</label>
+                            <select name="toAddress" id="toAddress" class="form-select" required>
+                                <option value="">Select recipient...</option>
+                                @foreach (var wallet in wallets)
+                                {
+                                    <option value="@wallet">@wallet</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">Amount</label>
+                            <input type="number" name="amount" id="amount" class="form-control" step="0.01" min="0.01" required />
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Create Transaction</button>
+                            <a asp-action="Wallet" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="alert alert-info">
+                <h5>Transaction Notes</h5>
+                <ul>
+                    <li>Transactions are added to the pending pool</li>
+                    <li>They will be included in the next mined block</li>
+                    <li>Contract validation happens before adding to pending pool</li>
+                    <li>If a contract rejects the transaction, you'll see an error message</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
