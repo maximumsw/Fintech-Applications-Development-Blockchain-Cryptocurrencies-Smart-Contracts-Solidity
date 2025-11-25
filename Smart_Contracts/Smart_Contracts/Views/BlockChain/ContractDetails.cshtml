@@ -1,0 +1,127 @@
+@using Smart_Contracts.Models
+@{
+    ViewData["Title"] = "Contract Details";
+    var contract = (ISmartContract)ViewBag.Contract;
+    var currentBlock = (int)ViewBag.CurrentBlockIndex;
+    var address = (string)ViewBag.Address;
+}
+
+<div class="container mt-4">
+    <h1>Contract Details</h1>
+
+    <div class="row mt-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5>@contract.GetType().Name</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th>Contract Type</th>
+                                <td>@contract.GetType().Name</td>
+                            </tr>
+                            <tr>
+                                <th>Address</th>
+                                <td><code>@contract.Address</code></td>
+                            </tr>
+
+                            @if (contract is TimeLockContract timeLock)
+                            {
+                                <tr>
+                                    <th>Unlock Block Index</th>
+                                    <td>@timeLock.UnlockBlockIndex</td>
+                                </tr>
+                                <tr>
+                                    <th>Current Block</th>
+                                    <td>@currentBlock</td>
+                                </tr>
+                                <tr>
+                                    <th>Status</th>
+                                    <td>
+                                        @if (currentBlock >= timeLock.UnlockBlockIndex)
+                                        {
+                                            <span class="badge bg-success">Unlocked</span>
+                                            <p class="mt-2 mb-0 text-success">
+                                                ✓ Funds are available for transfer
+                                            </p>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning">Locked</span>
+                                            <p class="mt-2 mb-0 text-warning">
+                                                ⏳ Locked for @(timeLock.UnlockBlockIndex - currentBlock) more block(s)
+                                            </p>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    <div class="mt-4">
+                        <h6>Contract Behavior</h6>
+                        @if (contract is TimeLockContract)
+                        {
+                            <div class="alert alert-info">
+                                <p><strong>Validation Rules:</strong></p>
+                                <ul>
+                                    <li>Transactions FROM this address are blocked until block @((contract as TimeLockContract)!.UnlockBlockIndex)</li>
+                                    <li>Transactions TO this address are always allowed</li>
+                                    <li>After unlock, the address functions as a normal wallet</li>
+                                </ul>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="mt-3">
+                        <a asp-action="Wallet" class="btn btn-secondary">Back to Wallet</a>
+                        <a asp-action="Transactions" asp-route-address="@address" class="btn btn-primary">View Transactions</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6>Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a asp-action="CreateTransaction" class="btn btn-outline-primary">
+                            Send from this Address
+                        </a>
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            View BlockChain
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            @if (contract is TimeLockContract timeLock2)
+            {
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h6>Timeline</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="progress" style="height: 25px;">
+                            @{
+                                var progress = Math.Min(100, (currentBlock * 100.0 / timeLock2.UnlockBlockIndex));
+                            }
+                            <div class="progress-bar" role="progressbar" style="width: @progress%"
+                                 aria-valuenow="@currentBlock" aria-valuemin="0" aria-valuemax="@timeLock2.UnlockBlockIndex">
+                                @currentBlock / @timeLock2.UnlockBlockIndex
+                            </div>
+                        </div>
+                        <p class="mt-2 text-muted small">
+                            Progress until unlock
+                        </p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
